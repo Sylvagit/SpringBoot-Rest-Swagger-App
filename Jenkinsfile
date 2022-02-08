@@ -1,29 +1,33 @@
 pipeline {
     agent any
-     environment {
+
+    environment {
         Maven= "C:\\Users\\MONICA-MARY-HOWELL\\Documents\\apache-maven-3.8.4\\bin"
     }
+
     stages {
-        stage("SCM Checkout") {
+        stage('SCM Checkout') {
             steps {
                 git 'https://github.com/Sylvagit/SpringBoot-Rest-Swagger-App.git'
             }
-        stage("Build") {
+        }
+        stage('build') {   
             steps {
                 bat 'mvn clean compile package'
             }
-        stage("Deploy") {
+        }
+        stage('Deploy') {
             steps {
                 deploy adapters: [tomcat9(credentialsId: 'tomcatid', path: '', url: 'http://localhost:8080/')], contextPath: 'Springboot', onFailure: false, war: '**/*.war'
-            }
-            post {
-                success {
+            } 
+        }
+    }        
+
+    post {
+            success {
                     junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
+                    archiveArtifacts 'target/*.war'
                 }
             }
-        }
-    }
-  }
 }
-}
+
